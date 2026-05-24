@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>باشر - مرور دولة SM</title>
+    <style>
+        :root { --accent-green: #16a34a; --bg-dark: #060d1a; --text-white: #ffffff; }
+        body { background-color: #020617; color: var(--text-white); font-family: sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: auto; background: var(--bg-dark); padding: 20px; border-radius: 20px; border: 1px solid #1e293b; }
+        h1 { text-align: center; color: var(--accent-green); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--accent-green); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .tab { display: none; } .tab.active { display: block; }
+        .tabs-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; background: #1e293b; border: none; color: white; cursor: pointer; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>باشر - مرور دولة SM</h1>
+    
+    <div class="tabs-nav">
+        <button class="tab-btn" onclick="showTab('mokhalafa')">مخالفة</button>
+        <button class="tab-btn" onclick="showTab('hajz')">حجز</button>
+        <button class="tab-btn" onclick="showTab('taameem')">تعاميم</button>
+    </div>
+
+    <!-- قسم المخالفة -->
+    <div id="mokhalafa" class="tab active">
+        <h3>تسجيل مخالفة</h3>
+        <input type="text" id="m_cop" placeholder="اسم العسكري (ديسكورد)">
+        <input type="text" id="m_player" placeholder="اسم الشخص (لعبة)">
+        <input type="text" id="m_reason" placeholder="سبب المخالفة">
+        <input type="number" id="m_price" placeholder="المبلغ">
+        <button onclick="sendWebhook('مخالفة مرورية', ['m_cop', 'm_player', 'm_reason', 'm_price'])">إرسال المخالفة</button>
+    </div>
+
+    <!-- قسم الحجز -->
+    <div id="hajz" class="tab">
+        <h3>نظام الحجز</h3>
+        <input type="text" id="h_cop" placeholder="اسم العسكري (ديسكورد)">
+        <input type="text" id="h_player" placeholder="اسم الشخص (لعبة)">
+        <input type="text" id="h_reason" placeholder="سبب الحجز">
+        <input type="text" id="h_duration" placeholder="مدة الحجز">
+        <button onclick="sendWebhook('حجز مركبة/شخص', ['h_cop', 'h_player', 'h_reason', 'h_duration'])">تنفيذ الحجز</button>
+    </div>
+
+    <!-- قسم التعاميم -->
+    <div id="taameem" class="tab">
+        <h3>إرسال تعميم</h3>
+        <input type="text" id="t_player_d" placeholder="اسم الشخص (ديسكورد)">
+        <input type="text" id="t_player_r" placeholder="اسم الشخص (روبلوكس)">
+        <button onclick="sendWebhook('تعميم أمني', ['t_player_d', 't_player_r'])">إرسال التعميم</button>
+    </div>
+</div>
+
+<script>
+    const webhookURL = "https://discord.com/api/webhooks/1508207666890280971/hNlsSSJ0TosA6NnUTwPjgfZZE-PIJdPpIijAId6ZkCSDLUL1yi--jUWW3HsQrmTvyjJ5";
+
+    function showTab(id) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    async function sendWebhook(title, fields) {
+        let content = `**${title}**\n`;
+        fields.forEach(f => {
+            content += `- ${document.getElementById(f).placeholder}: ${document.getElementById(f).value}\n`;
+        });
+
+        await fetch(webhookURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: content })
+        });
+        alert("تم الإرسال بنجاح إلى ديسكورد!");
+    }
+</script>
+
+</body>
+</html>
